@@ -7,27 +7,58 @@
 </head>
 <body>
 <header class="topbar">
-  <h1>ESSU MARKETPLACE</h1>
-  <div style="flex:1"></div>
-  <div class="top-icons">
-    <button onclick="location.href='dashboard.html'">Home</button>
+  <div class="topbar-inner">
+    <h1>ESSU MARKETPLACE</h1>
+    <div style="flex:1"></div>
+    <div class="top-icons">
+      <button onclick="location.href='dashboard.html'">Home</button>
+    </div>
   </div>
 </header>
 
 <main class="profile-container">
-  <section class="profile-card card">
-    <div class="avatar-wrap">
-      <img id="avatarImg" src="" alt="avatar">
-      <div id="avatarInitials" class="avatar-initials"></div>
-    </div>
-    <div class="profile-info">
-      <h3 id="profileName">Guest</h3>
-      <div class="muted" id="profileEmail">-</div>
-      <div style="margin-top:12px">
-        <label class="btn btn-sm" for="avatarInput">Change Photo</label>
+  <section class="profile-card-page">
+    <div class="avatar-section-page">
+      <div class="avatar-wrap-page">
+        <img id="avatarImg" src="" alt="avatar">
+        <div id="avatarInitials" class="avatar-initials-page"></div>
+      </div>
+      <div style="margin-top:16px;text-align:center">
+        <label class="btn btn-sm" for="avatarInput">📷 Change Photo</label>
         <input id="avatarInput" type="file" accept="image/*" style="display:none">
-        <button class="btn btn-sm" onclick="location.href='dashboard.html'">Back to Shop</button>
-        <button class="btn btn-sm signout-btn" onclick="logout()">Sign Out</button>
+        <button class="btn btn-sm" onclick="enableProfileEditPage()">✏️ Edit Profile</button>
+      </div>
+    </div>
+    
+    <div class="profile-info-page">
+      <h3 id="profileName">Guest</h3>
+      <div class="muted-page" id="profileEmail">-</div>
+      <div class="muted-page" id="profileId">ID: -</div>
+      <div class="muted-page" id="profileDept">Department: -</div>
+      
+      <div id="profileEditAreaPage" style="margin-top:16px;display:none;border-top:1px solid #e5e7eb;padding-top:12px">
+        <input id="editIdPage" placeholder="ID number" style="width:100%;padding:8px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+        <select id="editDeptPage" style="width:100%;padding:8px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+          <option value="Computer Science">Computer Science</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Business Administration">Business Administration</option>
+          <option value="Information Technology">Information Technology</option>
+          <option value="Liberal Arts">Liberal Arts</option>
+          <option value="Education">Education</option>
+          <option value="Sciences">Sciences</option>
+          <option value="Nursing">Nursing</option>
+          <option value="Hospitality Management">Hospitality Management</option>
+          <option value="Fine Arts">Fine Arts</option>
+        </select>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="saveProfilePage()" style="flex:1;background:#16a34a;color:white">Save</button>
+          <button class="btn btn-sm" onclick="cancelProfileEditPage()" style="flex:1;background:#e5e7eb">Cancel</button>
+        </div>
+      </div>
+      
+      <div style="margin-top:16px;border-top:1px solid #e5e7eb;padding-top:12px;display:flex;gap:8px;flex-direction:column">
+        <button class="btn btn-sm" onclick="location.href='dashboard.html'" style="background:#f3f4f6">← Back to Shop</button>
+        <button class="btn btn-sm signout-btn" onclick="logout()" style="background:#fee2e2;color:#dc2626">🚪 Sign Out</button>
       </div>
     </div>
   </section>
@@ -39,19 +70,24 @@
 </main>
 
 <style>
-.profile-container{max-width:1200px;margin:28px auto;padding:0 20px;display:grid;grid-template-columns:300px 1fr;gap:20px}
-.profile-card{display:flex;gap:14px;align-items:center;padding:18px}
-.avatar-wrap{width:96px;height:96px;border-radius:12px;overflow:hidden;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
-.avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none}
-.avatar-initials{font-size:28px;font-weight:700;color:#fff;background:linear-gradient(135deg,#44c06b,#1ea160);width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-.profile-info h3{margin:0}
-.orders-section{min-width:0}
-.orders-list .order-card{margin-bottom:12px;padding:12px;border-radius:8px;background:#fff;border:1px solid rgba(0,0,0,0.06)}
+.profile-container{max-width:1200px;margin:28px auto;padding:0 20px;display:grid;grid-template-columns:1fr;gap:20px}
+.profile-card-page{display:flex;gap:24px;align-items:flex-start;padding:28px;background:white;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+.avatar-section-page{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+.profile-info-page{flex:1}
+.avatar-wrap-page{width:140px;height:140px;border-radius:16px;overflow:hidden;background:#f3f4f6;display:flex;align-items:center;justify-content:center;border:3px solid #e5e7eb}
+.avatar-wrap-page img{width:100%;height:100%;object-fit:cover;display:none}
+.avatar-initials-page{font-size:56px;font-weight:700;color:#fff;background:linear-gradient(135deg,#44c06b,#1ea160);width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.profile-info-page h3{margin:0;font-size:24px;font-weight:700;color:#111}
+.muted-page{color:#6b7280;font-size:14px;margin-top:6px}
+.orders-section{min-width:0;margin-top:28px}
+.orders-section h2{font-size:20px;font-weight:700;margin-bottom:16px}
+.orders-list .order-card{margin-bottom:12px;padding:16px;border-radius:8px;background:white;border:1px solid #e5e7eb;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
 .order-items{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-.order-item{display:flex;gap:8px;align-items:center;border-radius:6px;padding:6px;background:var(--muted-bg);min-width:200px}
-.order-item img{width:48px;height:48px;object-fit:cover;border-radius:6px}
-.avatar-initials, .muted{color:#fff}
-@media(max-width:880px){.profile-container{grid-template-columns:1fr;}}
+.order-item{display:flex;gap:12px;align-items:center;border-radius:8px;padding:8px;background:#f9fafb}
+.order-item img{width:56px;height:56px;object-fit:cover;border-radius:6px}
+.btn,.btn-sm{padding:8px 12px;border:none;background:#f3f4f6;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
+.btn:hover,.btn-sm:hover{background:#e5e7eb}
+@media(max-width:880px){.profile-container{grid-template-columns:1fr;}.profile-card-page{flex-direction:column;align-items:center;text-align:center}.avatar-section-page{flex-shrink:0}}
 </style>
 
 <script>
@@ -66,6 +102,8 @@ function showProfileAndOrders(){
   const emailEl = document.getElementById('profileEmail');
   nameEl.textContent = user.name || 'Guest';
   emailEl.textContent = user.email || '-';
+  document.getElementById('profileId').innerText = 'ID: ' + (user.idNumber || '-');
+  document.getElementById('profileDept').innerText = 'Department: ' + (user.department || '-');
 
   const avatarKey = 'avatar_' + (user.email||'');
   const avatarData = localStorage.getItem(avatarKey);
@@ -101,6 +139,36 @@ document.getElementById('avatarInput').addEventListener('change', async function
 });
 
 window.addEventListener('DOMContentLoaded', showProfileAndOrders);
+
+function enableProfileEditPage(){
+  const buyer = localStorage.getItem('buyer') || '';
+  const users = JSON.parse(localStorage.getItem('users')||'[]');
+  const user = users.find(u=>u.email===buyer) || {};
+  document.getElementById('editIdPage').value = user.idNumber || '';
+  document.getElementById('editDeptPage').value = user.department || '';
+  document.getElementById('profileEditAreaPage').style.display = 'block';
+}
+function cancelProfileEditPage(){ document.getElementById('profileEditAreaPage').style.display = 'none'; }
+function saveProfilePage(){
+  const buyer = localStorage.getItem('buyer') || '';
+  if(!buyer) return alert('Please login to edit profile');
+  const users = JSON.parse(localStorage.getItem('users')||'[]');
+  const idx = users.findIndex(u=>u.email===buyer);
+  if(idx === -1) return alert('User not found');
+  
+  const newId = document.getElementById('editIdPage').value.trim();
+  const newDept = document.getElementById('editDeptPage').value.trim();
+  if(!newId || !newDept) return alert('Please fill all fields');
+  
+  users[idx].idNumber = newId;
+  users[idx].department = newDept;
+  localStorage.setItem('users', JSON.stringify(users));
+  
+  document.getElementById('profileEditAreaPage').style.display = 'none';
+  document.getElementById('profileId').innerText = 'ID: ' + newId;
+  document.getElementById('profileDept').innerText = 'Department: ' + newDept;
+  alert('Profile saved ✓');
+}
 </script>
 </body>
 </html>

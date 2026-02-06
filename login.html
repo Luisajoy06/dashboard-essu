@@ -14,7 +14,7 @@
       <p>Welcome back! Sign in to continue</p>
     </div>
 
-    <div class="card">
+    <div class="card auth-card">
       <div class="tabs">
         <button id="loginTab" class="active">Login</button>
         <button id="signupTab">Sign Up</button>
@@ -44,6 +44,25 @@
 
         <label>Email Address</label>
         <input id="suEmail" type="email" placeholder="your.email@essu.edu.ph" required>
+
+        <label>Student Number</label>
+        <input id="suStudentNo" type="text" placeholder="Student ID (e.g., 2024-1234)" required>
+
+        <label>Department</label>
+        <select id="suDepartment" required>
+          <option value="">Select your department</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Civil Engineering">Civil Engineering</option>
+          <option value="Electrical Engineering">Electrical Engineering</option>
+          <option value="Business Administration">Business Administration</option>
+          <option value="Information Technology">Information Technology</option>
+          <option value="Liberal Arts">Liberal Arts</option>
+          <option value="Education">Education</option>
+          <option value="Sciences">Sciences</option>
+          <option value="Nursing">Nursing</option>
+          <option value="Hospitality Management">Hospitality Management</option>
+          <option value="Fine Arts">Fine Arts</option>
+        </select>
 
         <label>Password</label>
         <input id="suPassword" type="password" placeholder="Create password" required>

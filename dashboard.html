@@ -10,21 +10,23 @@
 
 <!-- NAVBAR -->
 <header class="navbar">
-  <div class="nav-left">
-    <span class="logo">👜</span>
-    <h1>ESSU MARKETPLACE</h1>
-  </div>
+  <div class="nav-inner">
+    <div class="nav-left">
+      <span class="logo">👜</span>
+      <h1>ESSU MARKETPLACE</h1>
+    </div>
 
-  <div class="search-box">
-    <input type="text" placeholder="Search products...">
-  </div>
+    <div class="search-box">
+      <input type="text" placeholder="Search products...">
+    </div>
 
-  <div class="nav-right">
-    <button class="sell-btn">＋ Sell Item</button>
-    <span class="icon"></span>
-    <span class="icon">💲</span>
-    <button onclick="openProfilePanel()">👤</button>
-    <button onclick="openMiniCart()" style="position:relative">🛒 <span id="cartBadge" class="badge"></span></button>
+    <div class="nav-right">
+      <button class="sell-btn">＋ Sell Item</button>
+      <span class="icon"></span>
+      <span class="icon">💲</span>
+      <button onclick="openProfilePanel()">👤</button>
+      <button onclick="openMiniCart()" style="position:relative">🛒 <span id="cartBadge" class="badge"></span></button>
+    </div>
   </div>
 </header>
 
@@ -57,15 +59,15 @@
 <div id="miniCart" class="mini-cart">
   <div class="mini-cart-content">
     <button class="mini-close" onclick="closeMiniCart()">×</button>
-    <h4>Your Cart</h4>
+    <h4>🛒 Your Cart</h4>
     <div id="miniCartList" style="margin-top:8px;max-height:420px;overflow:auto"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
-      <div class="muted">Total</div>
-      <div id="miniCartTotal" style="font-weight:800;color:var(--accent)"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:2px solid #f3f4f6">
+      <div style="font-weight:700;color:#111">Total</div>
+      <div id="miniCartTotal" style="font-weight:800;font-size:18px;color:var(--accent)"></div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button onclick="closeMiniCart()" style="flex:1;background:#f3f3f3;border:none;padding:10px;border-radius:8px">Continue Shopping</button>
-      <button onclick="placeOrderFromMini()" style="flex:1;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:8px">Checkout</button>
+    <div style="display:flex;gap:12px;margin-top:16px">
+      <button onclick="closeMiniCart()" style="flex:1;background:#f3f4f6;border:none;padding:12px;border-radius:8px;font-weight:600;cursor:pointer;transition:all .2s" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">Continue Shopping</button>
+      <button onclick="placeOrderFromMini()" style="flex:1;background:var(--accent);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:600;cursor:pointer;transition:all .2s" onmouseover="this.style.background='var(--accent-dark)'" onmouseout="this.style.background='var(--accent)'">Checkout</button>
     </div>
   </div>
 </div>
@@ -127,19 +129,48 @@
 <div id="profilePanel" class="profile-panel">
   <div class="profile-panel-content">
     <button class="panel-close" onclick="closeProfilePanel()">×</button>
-    <section class="profile-card card">
-      <div class="avatar-wrap">
-        <img id="avatarImgPanel" src="" alt="avatar">
-        <div id="avatarInitialsPanel" class="avatar-initials"></div>
-      </div>
-      <div class="profile-info">
-        <h3 id="profileNamePanel">Guest</h3>
-        <div class="muted" id="profileEmailPanel">-</div>
-        <div style="margin-top:12px">
-          <label class="btn btn-sm" for="avatarInputPanel">Change Photo</label>
+    <section class="profile-card-panel">
+      <div class="avatar-section-panel">
+        <div class="avatar-wrap-panel">
+          <img id="avatarImgPanel" src="" alt="avatar">
+          <div id="avatarInitialsPanel" class="avatar-initials-panel"></div>
+        </div>
+        <div style="margin-top:12px;text-align:center">
+          <label class="btn btn-sm" for="avatarInputPanel">📷 Change Photo</label>
           <input id="avatarInputPanel" type="file" accept="image/*" style="display:none">
-          <button class="btn btn-sm" onclick="closeProfilePanel();">Back to Shop</button>
-          <button class="btn btn-sm signout-btn" onclick="logout()">Sign Out</button>
+          <button class="btn btn-sm" onclick="enableProfileEdit()">✏️ Edit Profile</button>
+        </div>
+      </div>
+      
+      <div class="profile-info-panel">
+        <h3 id="profileNamePanel">Guest</h3>
+        <div class="muted-panel" id="profileEmailPanel">-</div>
+        <div class="muted-panel" id="profileIdPanel">ID: -</div>
+        <div class="muted-panel" id="profileDeptPanel">Department: -</div>
+        
+        <div id="profileEditArea" style="margin-top:16px;display:none;border-top:1px solid #e5e7eb;padding-top:12px">
+          <input id="editId" placeholder="ID number" style="width:100%;padding:8px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+          <select id="editDept" style="width:100%;padding:8px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+            <option value="Computer Science">Computer Science</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Business Administration">Business Administration</option>
+            <option value="Information Technology">Information Technology</option>
+            <option value="Liberal Arts">Liberal Arts</option>
+            <option value="Education">Education</option>
+            <option value="Sciences">Sciences</option>
+            <option value="Nursing">Nursing</option>
+            <option value="Hospitality Management">Hospitality Management</option>
+            <option value="Fine Arts">Fine Arts</option>
+          </select>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm" onclick="saveProfilePanel()" style="flex:1;background:#16a34a;color:white">Save</button>
+            <button class="btn btn-sm" onclick="cancelProfileEdit()" style="flex:1;background:#e5e7eb">Cancel</button>
+          </div>
+        </div>
+        
+        <div style="margin-top:16px;border-top:1px solid #e5e7eb;padding-top:12px;display:flex;gap:8px;flex-direction:column">
+          <button class="btn btn-sm" onclick="closeProfilePanel();" style="background:#f3f4f6">← Back to Shop</button>
+          <button class="btn btn-sm signout-btn" onclick="logout()" style="background:#fee2e2;color:#dc2626">🚪 Sign Out</button>
         </div>
       </div>
     </section>
@@ -156,12 +187,17 @@
 .profile-panel.open{transform:translateX(0)}
 .profile-panel-content{max-width:380px;margin:0 auto}
 .panel-close{position:absolute;left:8px;top:8px;border:none;background:transparent;font-size:22px;cursor:pointer}
-.profile-panel .profile-card{display:flex;gap:14px;align-items:center;padding:12px;margin-bottom:12px}
-.profile-panel .avatar-wrap{width:88px;height:88px;border-radius:12px;overflow:hidden;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
-.profile-panel .avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none}
-.profile-panel .avatar-initials{font-size:26px;font-weight:700;color:#fff;background:linear-gradient(135deg,#44c06b,#1ea160);width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.profile-card-panel{background:white;border-radius:12px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;flex-direction:column;gap:20px;align-items:center;margin-bottom:12px;text-align:center}
+.avatar-section-panel{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+.profile-info-panel{width:100%}
+.avatar-wrap-panel{width:120px;height:120px;border-radius:16px;overflow:hidden;background:#f3f4f6;display:flex;align-items:center;justify-content:center;border:3px solid #e5e7eb}
+.avatar-wrap-panel img{width:100%;height:100%;object-fit:cover;display:none}
+.avatar-initials-panel{font-size:48px;font-weight:700;color:#fff;background:linear-gradient(135deg,#44c06b,#1ea160);width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.profile-info-panel h3{margin:0;font-size:18px;font-weight:700;color:#111}
+.muted-panel{color:#6b7280;font-size:13px;margin-top:4px}
 .profile-panel .orders-section h2{margin-top:6px}
-.profile-panel .muted{color:#6b7280}
+.btn{padding:8px 12px;border:none;background:#f3f4f6;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
+.btn:hover{background:#e5e7eb}
 </style>
 
 <script>
@@ -190,6 +226,10 @@ function showProfileAndOrdersPanel(){
   if(avatarData){ avatarImg.src = avatarData; avatarImg.style.display='block'; avatarInit.style.display='none'; }
   else { avatarImg.style.display='none'; avatarInit.style.display='flex'; avatarInit.textContent = (user.name||'G').split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase(); }
 
+  // show additional profile fields
+  document.getElementById('profileIdPanel').innerText = 'ID: ' + (user.idNumber || '-');
+  document.getElementById('profileDeptPanel').innerText = 'Department: ' + (user.department || '-');
+
   const wrap = document.getElementById('ordersListPanel');
   if(!buyer){ wrap.innerHTML = '<p class="muted">Please login to see your orders.</p>'; return; }
   const my = orders.filter(o=> o.buyer === buyer);
@@ -212,6 +252,36 @@ document.getElementById('avatarInputPanel').addEventListener('change', async fun
   localStorage.setItem('avatar_'+buyer, data);
   showProfileAndOrdersPanel();
 });
+
+function enableProfileEdit(){
+  const buyer = localStorage.getItem('buyer') || '';
+  const users = JSON.parse(localStorage.getItem('users')||'[]');
+  const user = users.find(u=>u.email===buyer) || {};
+  document.getElementById('editId').value = user.idNumber || '';
+  document.getElementById('editDept').value = user.department || '';
+  document.getElementById('profileEditArea').style.display = 'block';
+}
+function cancelProfileEdit(){ document.getElementById('profileEditArea').style.display = 'none'; }
+function saveProfilePanel(){
+  const buyer = localStorage.getItem('buyer') || '';
+  if(!buyer) return alert('Please login to edit profile');
+  const users = JSON.parse(localStorage.getItem('users')||'[]');
+  const idx = users.findIndex(u=>u.email===buyer);
+  if(idx === -1) return alert('User not found');
+  
+  const newId = document.getElementById('editId').value.trim();
+  const newDept = document.getElementById('editDept').value.trim();
+  if(!newId || !newDept) return alert('Please fill all fields');
+  
+  users[idx].idNumber = newId;
+  users[idx].department = newDept;
+  localStorage.setItem('users', JSON.stringify(users));
+  
+  document.getElementById('profileEditArea').style.display = 'none';
+  document.getElementById('profileIdPanel').innerText = 'ID: ' + newId;
+  document.getElementById('profileDeptPanel').innerText = 'Department: ' + newDept;
+  showToast('Profile saved ✓');
+}
 </script>
 </body>
 </html>

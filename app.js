@@ -30,11 +30,13 @@ function useTestCreds() {
 function signup() {
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("suEmail").value.trim();
+  const studentNo = document.getElementById("suStudentNo").value.trim();
+  const department = document.getElementById("suDepartment").value.trim();
   const pass = document.getElementById("suPassword").value;
   const confirm = document.getElementById("suConfirm").value;
   const errEl = document.getElementById("signupError");
 
-  if (!name || !email || !pass || !confirm) {
+  if (!name || !email || !studentNo || !department || !pass || !confirm) {
     errEl.innerText = "Please fill all fields";
     return;
   }
@@ -49,7 +51,7 @@ function signup() {
     return;
   }
 
-  users.push({ name, email, password: pass });
+  users.push({ name, email, password: pass, idNumber: studentNo, department: department });
   saveUsers(users);
   localStorage.setItem("buyer", email);
   window.location.href = "dashboard.html";
@@ -108,7 +110,7 @@ function renderProducts(filterCategory){
       <div class="card">
         <span class="tag">${p.category}</span>
         <span class="heart">♡</span>
-        <img src="${p.img}" alt="">
+        <img src="${p.img||'https://via.placeholder.com/300x220?text=No+Image'}" alt="" onerror="this.src='https://via.placeholder.com/300x220?text=No+Image'">
         <h3>${p.name}</h3>
         <p>${p.desc || ''}</p>
         <h4>₱${p.price}</h4>
@@ -145,8 +147,8 @@ function addToCart(id) {
   renderCart();
   showToast(`${item.name} added to cart`);
   updateCartBadge();
-  // Open combined checkout (payment + address) after adding an item for quick purchase
-  openCheckoutModal(true);
+  // Open mini-cart so user sees the item was added
+  openMiniCart();
 }
 
 function renderCart() {
@@ -279,7 +281,9 @@ function confirmOrderFromModal(){
   orders.push(order);
   localStorage.setItem('orders', JSON.stringify(orders));
 
-  cart = [];
+  // Restore original cart and only remove checked-out items
+  if(window.restoreCart){ window.restoreCart(); }
+  else { cart = []; }
   saveCart();
   renderCart();
   updateCartBadge();
@@ -319,7 +323,7 @@ function renderMiniCart(){
   wrap.innerHTML = '';
   let total = 0;
   if(!cart.length) {
-    wrap.innerHTML = '<div class="muted">Your cart is empty</div>';
+    wrap.innerHTML = '<div class="muted" style="padding:16px 0;text-align:center">Your cart is empty</div>';
     totalEl.innerText = '₱0';
     return;
   }
@@ -327,10 +331,25 @@ function renderMiniCart(){
     total += it.price * it.qty;
     const row = document.createElement('div');
     row.className = 'mini-item';
-    row.innerHTML = `<div style="display:flex;flex-direction:column"><div>${it.name}</div><div class="muted" style="font-size:13px">₱${it.price} each</div></div><div style="display:flex;align-items:center;gap:8px"><button onclick="changeQty(${i},-1)" class="qty-control">−</button><div>${it.qty}</div><button onclick="changeQty(${i},1)" class="qty-control">+</button><div style="min-width:8px"></div><div>₱${it.price * it.qty}</div></div>`;
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;flex:1;gap:12px">
+        <input type="checkbox" class="cart-item-select" data-index="${i}" checked style="width:18px;height:18px;cursor:pointer">
+        <img src="${it.img||'https://via.placeholder.com/64'}" onerror="this.src='https://via.placeholder.com/64'">
+        <div style="display:flex;flex-direction:column;flex:1">
+          <div style="font-weight:700;color:#111">${it.name}</div>
+          <div style="color:#6b7280;font-size:13px">₱${it.price.toLocaleString()} each</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <button onclick="changeQty(${i},-1)" class="qty-control">−</button>
+        <div style="min-width:24px;text-align:center;font-weight:600">${it.qty}</div>
+        <button onclick="changeQty(${i},1)" class="qty-control">+</button>
+        <div style="min-width:16px"></div>
+        <div style="font-weight:700;color:#111;min-width:80px;text-align:right">₱${(it.price * it.qty).toLocaleString()}</div>
+      </div>`;
     wrap.appendChild(row);
   });
-  totalEl.innerText = '₱' + total;
+  totalEl.innerText = '₱' + total.toLocaleString();
 }
 
 /* UI helpers: favorites & category filter */
@@ -358,10 +377,27 @@ function attachUIHandlers(){
 // ensure category buttons work on load
 attachUIHandlers();
 
+/* Get selected cart items for checkout */
+function getSelectedCartItems(){
+  const checkboxes = document.querySelectorAll('.cart-item-select:checked');
+  const selected = [];
+  checkboxes.forEach(cb => {
+    const idx = parseInt(cb.dataset.index);
+    if(cart[idx]) selected.push(cart[idx]);
+  });
+  return selected;
+}
+
 /* Place order from mini-cart: open modal stepper */
 function placeOrderFromMini(){
-  // Open combined checkout (payment + address) for faster flow
+  const selected = getSelectedCartItems();
+  if(!selected.length){ showToast('Please select items to checkout'); return; }
+  // Temporarily use selected items for checkout
+  const originalCart = cart.slice();
+  cart = selected;
   openCheckoutModal(true);
+  // Note: cart will be restored after order confirmation or modal close
+  window.restoreCart = ()=>{ cart = originalCart; };
 }
 
 /* Small toast */
