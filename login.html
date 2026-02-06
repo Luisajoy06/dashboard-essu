@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ESSU Marketplace</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="page">
+    <div class="header">
+      <div class="logo">👜</div>
+      <h1>ESSU MARKETPLACE</h1>
+      <p>Welcome back! Sign in to continue</p>
+    </div>
+
+    <div class="card">
+      <div class="tabs">
+        <button id="loginTab" class="active">Login</button>
+        <button id="signupTab">Sign Up</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="form" onsubmit="event.preventDefault(); login();">
+        <label>Email Address</label>
+        <input id="email" type="email" placeholder="your.email@essu.edu.ph" required>
+
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Enter your password" required>
+
+        <button type="submit" class="primary-btn">Sign In</button>
+
+        <p class="switch">
+          Don’t have an account?
+          <span id="goSignup">Sign up</span>
+        </p>
+        <p id="loginError"></p>
+      </form>
+
+      <!-- SIGNUP FORM -->
+      <form id="signupForm" class="form hidden" onsubmit="event.preventDefault(); signup();">
+        <label>Full name</label>
+        <input id="name" type="text" placeholder="Your full name" required>
+
+        <label>Email Address</label>
+        <input id="suEmail" type="email" placeholder="your.email@essu.edu.ph" required>
+
+        <label>Password</label>
+        <input id="suPassword" type="password" placeholder="Create password" required>
+
+        <label>Confirm Password</label>
+        <input id="suConfirm" type="password" placeholder="Confirm password" required>
+
+        <button type="submit" class="primary-btn">Create Account</button>
+
+        <p class="switch">
+          Already have an account?
+          <span id="goLogin">Login</span>
+        </p>
+        <p id="signupError"></p>
+      </form>
+    </div>
+
+    <footer>
+      Secure marketplace for ESSU students and faculty
+    </footer>
+  </div>
+
+  <script>
+    // simple tab behavior
+    document.getElementById('loginTab').addEventListener('click', () => {
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('signupForm').classList.add('hidden');
+      document.getElementById('loginTab').classList.add('active');
+      document.getElementById('signupTab').classList.remove('active');
+    });
+    document.getElementById('signupTab').addEventListener('click', () => {
+      document.getElementById('signupForm').classList.remove('hidden');
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('signupTab').classList.add('active');
+      document.getElementById('loginTab').classList.remove('active');
+    });
+    document.getElementById('goSignup').addEventListener('click', () => document.getElementById('signupTab').click());
+    document.getElementById('goLogin').addEventListener('click', () => document.getElementById('loginTab').click());
+  </script>
+
+  <script src="app.js"></script>
+</body>
+</html>
