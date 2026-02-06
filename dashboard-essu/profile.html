@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile | ESSU Marketplace</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>ESSU MARKETPLACE</h1>
+  <div style="flex:1"></div>
+  <div class="top-icons">
+    <button onclick="location.href='dashboard.html'">Home</button>
+  </div>
+</header>
+
+<main class="profile-container">
+  <section class="profile-card card">
+    <div class="avatar-wrap">
+      <img id="avatarImg" src="" alt="avatar">
+      <div id="avatarInitials" class="avatar-initials"></div>
+    </div>
+    <div class="profile-info">
+      <h3 id="profileName">Guest</h3>
+      <div class="muted" id="profileEmail">-</div>
+      <div style="margin-top:12px">
+        <label class="btn btn-sm" for="avatarInput">Change Photo</label>
+        <input id="avatarInput" type="file" accept="image/*" style="display:none">
+        <button class="btn btn-sm" onclick="location.href='dashboard.html'">Back to Shop</button>
+        <button class="btn btn-sm signout-btn" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="orders-section">
+    <h2>My Orders</h2>
+    <div id="ordersList" class="orders-list"></div>
+  </section>
+</main>
+
+<style>
+.profile-container{max-width:1200px;margin:28px auto;padding:0 20px;display:grid;grid-template-columns:300px 1fr;gap:20px}
+.profile-card{display:flex;gap:14px;align-items:center;padding:18px}
+.avatar-wrap{width:96px;height:96px;border-radius:12px;overflow:hidden;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
+.avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none}
+.avatar-initials{font-size:28px;font-weight:700;color:#fff;background:linear-gradient(135deg,#44c06b,#1ea160);width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.profile-info h3{margin:0}
+.orders-section{min-width:0}
+.orders-list .order-card{margin-bottom:12px;padding:12px;border-radius:8px;background:#fff;border:1px solid rgba(0,0,0,0.06)}
+.order-items{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.order-item{display:flex;gap:8px;align-items:center;border-radius:6px;padding:6px;background:var(--muted-bg);min-width:200px}
+.order-item img{width:48px;height:48px;object-fit:cover;border-radius:6px}
+.avatar-initials, .muted{color:#fff}
+@media(max-width:880px){.profile-container{grid-template-columns:1fr;}}
+</style>
+
+<script>
+function showProfileAndOrders(){
+  const buyer = localStorage.getItem('buyer');
+  const users = JSON.parse(localStorage.getItem('users')||'[]');
+  const orders = JSON.parse(localStorage.getItem('orders')||'[]');
+  const email = buyer || '';
+  const user = users.find(u=>u.email===email) || {};
+
+  const nameEl = document.getElementById('profileName');
+  const emailEl = document.getElementById('profileEmail');
+  nameEl.textContent = user.name || 'Guest';
+  emailEl.textContent = user.email || '-';
+
+  const avatarKey = 'avatar_' + (user.email||'');
+  const avatarData = localStorage.getItem(avatarKey);
+  const avatarImg = document.getElementById('avatarImg');
+  const avatarInit = document.getElementById('avatarInitials');
+  if(avatarData){ avatarImg.src = avatarData; avatarImg.style.display='block'; avatarInit.style.display='none'; }
+  else { avatarImg.style.display='none'; avatarInit.style.display='flex'; avatarInit.textContent = (user.name||'G').split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase(); }
+
+  // Render orders
+  const wrap = document.getElementById('ordersList');
+  if(!buyer){ wrap.innerHTML = '<p class="muted">Please login to see your orders.</p>'; return; }
+  const my = orders.filter(o=> o.buyer === buyer);
+  if(!my.length){ wrap.innerHTML = '<p class="muted">No orders yet.</p>'; return; }
+  wrap.innerHTML = '';
+  my.slice().reverse().forEach(o=>{
+    const oc = document.createElement('div');
+    oc.className = 'order-card';
+    const itemsHtml = (o.items||[]).map(i=>`<div class="order-item"><img src="${i.img||'https://via.placeholder.com/48'}"><div><div style="font-weight:700">${i.name}</div><div class="muted">₱${i.price} &times; ${i.qty||1}</div></div></div>`).join('');
+    oc.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Order ${o.id}</strong><div class="muted" style="font-size:13px">${new Date(o.createdAt).toLocaleString()}</div></div><div style="font-weight:800;color:var(--accent)">₱${o.total}</div></div><div class="order-items">${itemsHtml}</div><div style="margin-top:8px;color:#555">Payment: ${o.payment} • Address: ${o.address}</div>`;
+    wrap.appendChild(oc);
+  });
+}
+
+document.getElementById('avatarInput').addEventListener('change', async function(e){
+  const f = e.target.files[0];
+  const buyer = localStorage.getItem('buyer')||'';
+  if(!f || !buyer) return alert('Please login first.');
+  const data = await new Promise(res=>{
+    const r = new FileReader(); r.onload = ()=>res(r.result); r.readAsDataURL(f);
+  });
+  localStorage.setItem('avatar_'+buyer, data);
+  showProfileAndOrders();
+});
+
+window.addEventListener('DOMContentLoaded', showProfileAndOrders);
+</script>
+</body>
+</html>
