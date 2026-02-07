@@ -22,19 +22,33 @@
 
       <!-- LOGIN FORM -->
       <form id="loginForm" class="form" onsubmit="event.preventDefault(); login();">
-        <label>Email Address</label>
-        <input id="email" type="email" placeholder="your.email@essu.edu.ph" required>
+        <div class="input-group">
+          <label>Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input id="email" type="email" placeholder="your.email@essu.edu.ph" required>
+          </div>
+        </div>
 
-        <label>Password</label>
-        <input id="password" type="password" placeholder="Enter your password" required>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input id="password" type="password" placeholder="Enter your password" required>
+          </div>
+        </div>
 
-        <button type="submit" class="primary-btn">Sign In</button>
+        <div class="forgot-password">
+          <a href="#" onclick="alert('Forgot password functionality not implemented yet.'); return false;">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="primary-btn" id="loginBtn">Sign In</button>
 
         <p class="switch">
           Don’t have an account?
           <span id="goSignup">Sign up</span>
         </p>
-        <p id="loginError"></p>
+        <p id="loginError" class="error-message"></p>
       </form>
 
       <!-- SIGNUP FORM -->

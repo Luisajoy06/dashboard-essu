@@ -21,10 +21,9 @@
     </div>
 
     <div class="nav-right">
-      <button class="sell-btn">＋ Sell Item</button>
       <span class="icon"></span>
-      <span class="icon">💲</span>
-      <button onclick="openProfilePanel()">👤</button>
+      <button class="profile-btn" onclick="openWishlistPanel()">♥</button>
+      <button class="profile-btn" onclick="openProfilePanel()">👤</button>
       <button onclick="openMiniCart()" style="position:relative">🛒 <span id="cartBadge" class="badge"></span></button>
     </div>
   </div>
@@ -35,7 +34,7 @@
 
   <div class="title-row">
     <h2>Discover Items</h2>
-    <button class="filter-btn">⚙ Filters</button>
+    <button class="filter-btn" onclick="openFilterModal()">⚙ Filters</button>
   </div>
 
   <!-- CATEGORIES -->
@@ -54,6 +53,56 @@
   <div class="grid" id="itemsGrid"></div>
 
 </main>
+
+<!-- FILTER MODAL -->
+<div id="filterModal" class="modal">
+  <div class="modal-content filter-modal-content">
+    <button class="modal-close" onclick="closeFilterModal()">×</button>
+    <h3>🔍 Filter Products</h3>
+
+    <div class="filter-section">
+      <label class="filter-label">Search</label>
+      <input id="filterSearch" type="text" placeholder="Search by name or description" class="filter-input">
+    </div>
+
+    <div class="filter-section">
+      <label class="filter-label">Category</label>
+      <select id="filterCategory" class="filter-input">
+        <option value="">All Categories</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Books">Books</option>
+        <option value="Clothing">Clothing</option>
+        <option value="Furniture">Furniture</option>
+        <option value="Sports">Sports</option>
+        <option value="Food">Food</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="filter-section">
+      <label class="filter-label">Condition</label>
+      <select id="filterCondition" class="filter-input">
+        <option value="">Any Condition</option>
+        <option value="New">New</option>
+        <option value="Used">Used</option>
+      </select>
+    </div>
+
+    <div class="filter-section">
+      <label class="filter-label">Price Range</label>
+      <div class="price-range">
+        <input id="minPrice" type="number" placeholder="Min ₱" class="filter-input price-input">
+        <span>to</span>
+        <input id="maxPrice" type="number" placeholder="Max ₱" class="filter-input price-input">
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button onclick="clearFilters()" class="filter-btn secondary">Clear All</button>
+      <button onclick="applyFilters()" class="filter-btn primary">Apply Filters</button>
+    </div>
+  </div>
+</div>
 
 <!-- MINI CART PANEL -->
 <div id="miniCart" class="mini-cart">
@@ -87,24 +136,44 @@
     </div>
 
     <div id="step-payment" class="hidden">
-      <p class="muted">Step 1 — Choose payment method</p>
-      <div style="margin:12px 0">
-        <label><input type="radio" name="pmethod" value="Cash on Delivery"> Cash on Delivery</label><br>
-        <label><input type="radio" name="pmethod" value="GCash"> GCash</label><br>
-        <label><input type="radio" name="pmethod" value="PayMaya"> PayMaya</label>
+      <p class="muted" style="margin-bottom:20px">Step 1 — Choose payment method</p>
+      <div class="payment-methods">
+        <label class="payment-option">
+          <input type="radio" name="pmethod" value="Cash on Delivery" checked>
+          <div class="payment-card">
+            <div class="payment-icon">💵</div>
+            <div class="payment-info">
+              <div class="payment-title">Cash on Delivery</div>
+              <div class="payment-desc">Pay when you receive your order</div>
+            </div>
+          </div>
+        </label>
       </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
-        <button onclick="closeCheckoutModal()" style="background:#f3f3f3;padding:8px 12px;border-radius:8px;border:none;">Cancel</button>
-        <button onclick="toAddressStep()" style="background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;">Continue</button>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:24px">
+        <button onclick="closeCheckoutModal()" style="background:#f3f3f3;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Cancel</button>
+        <button onclick="toAddressStep()" style="background:var(--accent);color:#fff;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Continue</button>
       </div>
     </div>
 
     <div id="step-address" class="hidden">
-      <p class="muted">Step 2 — Delivery address</p>
-      <textarea id="addressInput" placeholder="Enter your delivery address" style="min-height:90px;padding:10px;border-radius:8px;border:1px solid #eee;width:100%"></textarea>
-      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
-        <button onclick="document.getElementById('step-address').classList.add('hidden');document.getElementById('step-payment').classList.remove('hidden')" style="background:#f3f3f3;padding:8px 12px;border-radius:8px;border:none;">Back</button>
-        <button onclick="toReviewStep()" style="background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;">Continue</button>
+      <p class="muted" style="margin-bottom:20px">Step 2 — Delivery address</p>
+      <div class="address-form">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input id="addressName" type="text" placeholder="Enter your full name" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input id="addressPhone" type="tel" placeholder="Enter your phone number" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Delivery Address</label>
+          <textarea id="addressInput" placeholder="Enter your complete delivery address" class="form-input" style="min-height:100px;resize:vertical"></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:24px">
+        <button onclick="document.getElementById('step-address').classList.add('hidden');document.getElementById('step-payment').classList.remove('hidden')" style="background:#f3f3f3;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Back</button>
+        <button onclick="toReviewStep()" style="background:var(--accent);color:#fff;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Continue</button>
       </div>
     </div>
 
@@ -124,7 +193,132 @@
   </div>
 </div>
 
-<script src="app.js"></script>
+<!-- SELLER SIGNUP MODAL -->
+<div id="sellerSignupModal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeSellerSignupModal()">×</button>
+    <h3>💼 Become a Seller</h3>
+    <p class="muted" style="margin-bottom:20px">Join the ESSU Marketplace as a verified seller</p>
+
+    <!-- Step 1: Gmail Verification -->
+    <div id="seller-step-1" class="seller-step">
+      <h4>Step 1: Verify Your Gmail</h4>
+      <p class="muted" style="margin-bottom:16px">We need to verify your Gmail account to ensure authenticity.</p>
+      <div class="form-group">
+        <label class="form-label">Gmail Address</label>
+        <input id="sellerGmail" type="email" placeholder="yourname@gmail.com" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Verification Code</label>
+        <div style="display:flex;gap:8px">
+          <input id="sellerVerificationCode" type="text" placeholder="Enter 6-digit code" class="form-input" maxlength="6">
+          <button onclick="sendVerificationCode()" id="sendCodeBtn" style="background:#007bff;color:#fff;border:none;padding:12px 16px;border-radius:8px;font-weight:600;cursor:pointer">Send Code</button>
+        </div>
+        <small class="muted" style="margin-top:4px">We'll send a verification code to your Gmail</small>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:24px">
+        <button onclick="closeSellerSignupModal()" style="background:#f3f3f3;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Cancel</button>
+        <button onclick="verifyGmailAndNext()" style="background:#007bff;color:#fff;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Verify & Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Personal Information -->
+    <div id="seller-step-2" class="seller-step hidden">
+      <h4>Step 2: Personal Information</h4>
+      <p class="muted" style="margin-bottom:16px">Please provide your personal details for seller verification.</p>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input id="sellerFullName" type="text" placeholder="Enter your full name" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input id="sellerPhone" type="tel" placeholder="Enter your phone number" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Student ID Number</label>
+        <input id="sellerIdNumber" type="text" placeholder="Enter your student ID" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Department</label>
+        <select id="sellerDepartment" class="form-input">
+          <option value="">Select Department</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Business Administration">Business Administration</option>
+          <option value="Information Technology">Information Technology</option>
+          <option value="Liberal Arts">Liberal Arts</option>
+          <option value="Education">Education</option>
+          <option value="Sciences">Sciences</option>
+          <option value="Nursing">Nursing</option>
+          <option value="Hospitality Management">Hospitality Management</option>
+          <option value="Fine Arts">Fine Arts</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:space-between;margin-top:24px">
+        <button onclick="backToStep1()" style="background:#f3f3f3;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Back</button>
+        <button onclick="toStep3()" style="background:#007bff;color:#fff;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Seller Details -->
+    <div id="seller-step-3" class="seller-step hidden">
+      <h4>Step 3: Seller Profile</h4>
+      <p class="muted" style="margin-bottom:16px">Set up your seller profile and preferences.</p>
+      <div class="form-group">
+        <label class="form-label">Seller Display Name</label>
+        <input id="sellerDisplayName" type="text" placeholder="How you want to appear as a seller" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Seller Bio</label>
+        <textarea id="sellerBio" placeholder="Tell buyers about yourself and what you sell..." class="form-input" style="min-height:80px;resize:vertical"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Preferred Categories</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <label class="checkbox-label"><input type="checkbox" value="Electronics"> Electronics</label>
+          <label class="checkbox-label"><input type="checkbox" value="Books"> Books</label>
+          <label class="checkbox-label"><input type="checkbox" value="Clothing"> Clothing</label>
+          <label class="checkbox-label"><input type="checkbox" value="Furniture"> Furniture</label>
+          <label class="checkbox-label"><input type="checkbox" value="Sports"> Sports</label>
+          <label class="checkbox-label"><input type="checkbox" value="Food"> Food</label>
+          <label class="checkbox-label"><input type="checkbox" value="Other"> Other</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label" style="font-weight:600">
+          <input type="checkbox" id="sellerAgreement">
+          I agree to the ESSU Marketplace Seller Terms and Conditions
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:space-between;margin-top:24px">
+        <button onclick="backToStep2()" style="background:#f3f3f3;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Back</button>
+        <button onclick="completeSellerSignup()" style="background:linear-gradient(135deg,#44c06b,#1ea160);color:#fff;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Complete Registration</button>
+      </div>
+    </div>
+
+    <!-- Success Step -->
+    <div id="seller-step-success" class="seller-step hidden">
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:48px;margin-bottom:16px">✅</div>
+        <h4>Welcome to ESSU Marketplace!</h4>
+        <p class="muted" style="margin-bottom:24px">Your seller account has been created successfully. You can now start listing items for sale.</p>
+        <button onclick="closeSellerSignupModal(); openSellModal();" style="background:linear-gradient(135deg,#44c06b,#1ea160);color:#fff;padding:12px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:600">Start Selling Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="app.js"></script>
+
+<!-- WISHLIST PANEL -->
+<div id="wishlistPanel" class="wishlist-panel">
+  <div class="wishlist-panel-content">
+    <button class="panel-close" onclick="closeWishlistPanel()">×</button>
+    <h2>❤️ My Wishlist</h2>
+    <div id="wishlistItems" class="wishlist-items"></div>
+  </div>
+</div>
+
 <!-- In-dashboard Profile Panel -->
 <div id="profilePanel" class="profile-panel">
   <div class="profile-panel-content">
@@ -169,6 +363,7 @@
         </div>
         
         <div style="margin-top:16px;border-top:1px solid #e5e7eb;padding-top:12px;display:flex;gap:8px;flex-direction:column">
+          <button class="btn btn-sm" onclick="openSellerSignupModal()" style="background:linear-gradient(135deg,#44c06b,#1ea160);color:#fff;font-weight:700">💼 Start Selling</button>
           <button class="btn btn-sm" onclick="closeProfilePanel();" style="background:#f3f4f6">← Back to Shop</button>
           <button class="btn btn-sm signout-btn" onclick="logout()" style="background:#fee2e2;color:#dc2626">🚪 Sign Out</button>
         </div>
@@ -190,7 +385,7 @@
 .profile-card-panel{background:white;border-radius:12px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;flex-direction:column;gap:20px;align-items:center;margin-bottom:12px;text-align:center}
 .avatar-section-panel{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:12px}
 .profile-info-panel{width:100%}
-.avatar-wrap-panel{width:120px;height:120px;border-radius:16px;overflow:hidden;background:#f3f4f6;display:flex;align-items:center;justify-content:center;border:3px solid #e5e7eb}
+.avatar-wrap-panel{width:120px;height:120px;border-radius:50%;overflow:hidden;background:#f3f4f6;display:flex;align-items:center;justify-content:center;border:3px solid #e5e7eb}
 .avatar-wrap-panel img{width:100%;height:100%;object-fit:cover;display:none}
 .avatar-initials-panel{font-size:48px;font-weight:700;color:#fff;background:linear-gradient(135deg,#44c06b,#1ea160);width:100%;height:100%;display:flex;align-items:center;justify-content:center}
 .profile-info-panel h3{margin:0;font-size:18px;font-weight:700;color:#111}
@@ -198,9 +393,76 @@
 .profile-panel .orders-section h2{margin-top:6px}
 .btn{padding:8px 12px;border:none;background:#f3f4f6;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
 .btn:hover{background:#e5e7eb}
+/* Payment & Address Styles */
+.payment-methods{display:flex;flex-direction:column;gap:12px}
+.payment-option{display:block}
+.payment-option input{display:none}
+.payment-card{display:flex;align-items:center;gap:16px;padding:16px;border:2px solid #e5e7eb;border-radius:12px;cursor:pointer;transition:all .3s;background:white}
+.payment-option input:checked+.payment-card{border-color:var(--accent);background:#fff8f3;box-shadow:0 4px 12px rgba(255,106,0,0.15)}
+.payment-icon{font-size:32px;flex-shrink:0}
+.payment-info{flex:1}
+.payment-title{font-weight:700;color:#111;margin-bottom:4px}
+.payment-desc{font-size:13px;color:#6b7280}
+/* Address Form */
+.address-form{background:#f9fafb;border-radius:12px;padding:20px;border:1px solid #e5e7eb}
+.form-group{margin-bottom:16px}
+.form-group:last-child{margin-bottom:0}
+.form-label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px}
+.form-input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto;transition:all .2s}
+.form-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,106,0,0.1)}
+/* Seller Signup Styles */
+.seller-step h4{font-size:18px;font-weight:700;margin-bottom:8px;color:#111}
+.seller-step p{font-size:14px;color:#6b7280;margin-bottom:16px}
+.checkbox-label{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #e5e7eb;border-radius:6px;background:#f9fafb;cursor:pointer;font-size:13px;font-weight:500}
+.checkbox-label:hover{background:#f3f4f6}
+.checkbox-label input[type="checkbox"]{width:16px;height:16px;margin:0}
+/* Wishlist Panel Styles */
+.wishlist-panel{position:fixed;right:0;top:0;bottom:0;width:420px;background:var(--card);color:#111;box-shadow:-18px 0 50px rgba(0,0,0,0.12);transform:translateX(100%);transition:transform .2s;z-index:120;padding:20px;overflow:auto}
+.wishlist-panel.open{transform:translateX(0)}
+.wishlist-panel-content{max-width:380px;margin:0 auto}
+.wishlist-items{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.wishlist-item{background:white;border-radius:12px;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;gap:12px}
+.wishlist-item img{width:80px;height:80px;object-fit:cover;border-radius:8px}
+.wishlist-item-details{flex:1}
+.wishlist-item h4{margin:0 0 4px 0;font-size:16px;font-weight:700;color:#111}
+.wishlist-item p{margin:0 0 8px 0;font-size:13px;color:#6b7280}
+.wishlist-item .price{font-weight:800;color:var(--accent);font-size:16px}
+.wishlist-item .seller{font-size:12px;color:#6b7280;margin-top:4px}
+.wishlist-item button{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:600;cursor:pointer;font-size:13px;margin-top:8px}
+.wishlist-item button:hover{background:var(--accent-dark)}
 </style>
 
 <script>
+function openWishlistPanel(){
+  document.getElementById('wishlistPanel').classList.add('open');
+  showWishlistPanel();
+}
+function closeWishlistPanel(){ document.getElementById('wishlistPanel').classList.remove('open'); }
+
+function showWishlistPanel(){
+  const wrap = document.getElementById('wishlistItems');
+  wrap.innerHTML = '';
+  if(!wishlist.length){
+    wrap.innerHTML = '<div style="text-align:center;padding:40px;color:#6b7280;font-size:16px">Your wishlist is empty</div>';
+    return;
+  }
+  wishlist.forEach(item => {
+    const itemEl = document.createElement('div');
+    itemEl.className = 'wishlist-item';
+    itemEl.innerHTML = `
+      <img src="${item.img||'https://via.placeholder.com/80'}" onerror="this.src='https://via.placeholder.com/80'">
+      <div class="wishlist-item-details">
+        <h4>${item.name}</h4>
+        <p>${item.desc || ''}</p>
+        <div class="price">₱${item.price}</div>
+        <div class="seller">Seller: ${item.seller || 'Unknown'}</div>
+        <button onclick="addToCart(${item.id}); closeWishlistPanel();">Add to Cart</button>
+      </div>
+    `;
+    wrap.appendChild(itemEl);
+  });
+}
+
 function openProfilePanel(){
   document.getElementById('profilePanel').classList.add('open');
   showProfileAndOrdersPanel();
@@ -239,7 +501,22 @@ function showProfileAndOrdersPanel(){
     const oc = document.createElement('div');
     oc.className = 'order-card';
     const itemsHtml = (o.items||[]).map(i=>`<div class="order-item"><img src="${i.img||'https://via.placeholder.com/48'}"><div><div style="font-weight:700">${i.name}</div><div class="muted">₱${i.price} &times; ${i.qty||1}</div></div></div>`).join('');
-    oc.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Order ${o.id}</strong><div class="muted" style="font-size:13px">${new Date(o.createdAt).toLocaleString()}</div></div><div style="font-weight:800;color:var(--accent)">₱${o.total}</div></div><div class="order-items">${itemsHtml}</div><div style="margin-top:8px;color:#555">Payment: ${o.payment} • Address: ${o.address}</div>`;
+    const statusColor = o.status === 'Delivered' ? '#16a34a' : o.status === 'Shipped' ? '#f59e0b' : '#6b7280';
+    const estimatedDelivery = o.estimatedDelivery ? new Date(o.estimatedDelivery).toLocaleDateString() : 'TBD';
+    oc.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Order ${o.id}</strong><div class="muted" style="font-size:13px">${new Date(o.createdAt).toLocaleString()}</div></div>
+        <div style="text-align:right">
+          <div style="font-weight:800;color:var(--accent)">₱${o.total}</div>
+          <div style="font-size:12px;color:${statusColor};font-weight:600">${o.status || 'Processing'}</div>
+        </div>
+      </div>
+      <div class="order-items">${itemsHtml}</div>
+      <div style="margin-top:8px;color:#555">
+        <div>Payment: ${o.payment} • Address: ${o.address}</div>
+        ${o.trackingNumber ? `<div>Tracking: ${o.trackingNumber} • Est. Delivery: ${estimatedDelivery}</div>` : ''}
+      </div>
+    `;
     wrap.appendChild(oc);
   });
 }
@@ -281,6 +558,174 @@ function saveProfilePanel(){
   document.getElementById('profileIdPanel').innerText = 'ID: ' + newId;
   document.getElementById('profileDeptPanel').innerText = 'Department: ' + newDept;
   showToast('Profile saved ✓');
+}
+
+// SELL MODAL FUNCTIONS
+function openSellModal(){
+  const buyer = localStorage.getItem('buyer');
+  if(!buyer){ alert('Please login to start selling'); return; }
+  document.getElementById('sellModal').classList.add('open');
+}
+function closeSellModal(){
+  document.getElementById('sellModal').classList.remove('open');
+  // Clear form
+  document.getElementById('sellName').value = '';
+  document.getElementById('sellPrice').value = '';
+  document.getElementById('sellCategory').value = 'Electronics';
+  document.getElementById('sellDesc').value = '';
+  document.getElementById('sellImg').value = '';
+}
+function submitSellItem(){
+  const buyer = localStorage.getItem('buyer');
+  if(!buyer){ alert('Please login to list items'); return; }
+  const users = JSON.parse(localStorage.getItem('users')||'[]');
+  const user = users.find(u=>u.email===buyer) || {};
+  const sellerName = user.name || 'Anonymous';
+
+  const name = document.getElementById('sellName').value.trim();
+  const price = parseFloat(document.getElementById('sellPrice').value);
+  const category = document.getElementById('sellCategory').value;
+  const desc = document.getElementById('sellDesc').value.trim();
+  const img = document.getElementById('sellImg').value.trim();
+
+  if(!name || !price || price <= 0){ alert('Please enter a valid name and price'); return; }
+
+  const newItem = {
+    id: Date.now(),
+    name: name,
+    price: price,
+    category: category,
+    desc: desc || '',
+    img: img || 'https://via.placeholder.com/300x220?text=No+Image',
+    seller: sellerName
+  };
+
+  // Add to products array
+  products.push(newItem);
+  localStorage.setItem('products', JSON.stringify(products));
+
+  // Re-render products
+  renderProducts();
+
+  closeSellModal();
+  showToast('Item listed successfully!');
+}
+
+// SELLER SIGNUP MODAL FUNCTIONS
+function openSellerSignupModal(){
+  const buyer = localStorage.getItem('buyer');
+  if(!buyer){ alert('Please login to become a seller'); return; }
+  document.getElementById('sellerSignupModal').classList.add('open');
+  // Show step 1
+  showSellerStep(1);
+}
+function closeSellerSignupModal(){
+  document.getElementById('sellerSignupModal').classList.remove('open');
+  // Clear all forms
+  document.getElementById('sellerGmail').value = '';
+  document.getElementById('sellerVerificationCode').value = '';
+  document.getElementById('sellerFullName').value = '';
+  document.getElementById('sellerPhone').value = '';
+  document.getElementById('sellerIdNumber').value = '';
+  document.getElementById('sellerDepartment').value = '';
+  document.getElementById('sellerDisplayName').value = '';
+  document.getElementById('sellerBio').value = '';
+  document.getElementById('sellerAgreement').checked = false;
+  // Uncheck all category checkboxes
+  document.querySelectorAll('#sellerSignupModal input[type="checkbox"]').forEach(cb => cb.checked = false);
+}
+
+function showSellerStep(stepNumber){
+  // Hide all steps
+  document.querySelectorAll('.seller-step').forEach(step => step.classList.add('hidden'));
+  // Show the specific step
+  document.getElementById('seller-step-' + stepNumber).classList.remove('hidden');
+}
+
+function sendVerificationCode(){
+  const gmail = document.getElementById('sellerGmail').value.trim();
+  if(!gmail || !gmail.endsWith('@gmail.com')){ alert('Please enter a valid Gmail address'); return; }
+
+  // Simulate sending verification code (in real app, this would call an API)
+  const code = Math.floor(100000 + Math.random() * 900000); // Generate 6-digit code
+  localStorage.setItem('verificationCode', code.toString());
+  localStorage.setItem('verificationEmail', gmail);
+
+  document.getElementById('sendCodeBtn').textContent = 'Code Sent!';
+  document.getElementById('sendCodeBtn').disabled = true;
+  setTimeout(() => {
+    document.getElementById('sendCodeBtn').textContent = 'Send Code';
+    document.getElementById('sendCodeBtn').disabled = false;
+  }, 30000); // Re-enable after 30 seconds
+
+  alert(`Verification code sent to ${gmail}: ${code}`); // In real app, don't show the code
+}
+
+function verifyGmailAndNext(){
+  const gmail = document.getElementById('sellerGmail').value.trim();
+  const code = document.getElementById('sellerVerificationCode').value.trim();
+  const storedCode = localStorage.getItem('verificationCode');
+  const storedEmail = localStorage.getItem('verificationEmail');
+
+  if(!gmail || !code){ alert('Please enter Gmail and verification code'); return; }
+  if(gmail !== storedEmail || code !== storedCode){ alert('Invalid verification code'); return; }
+
+  // Clear verification data
+  localStorage.removeItem('verificationCode');
+  localStorage.removeItem('verificationEmail');
+
+  // Proceed to step 2
+  showSellerStep(2);
+}
+
+function backToStep1(){
+  showSellerStep(1);
+}
+
+function toStep3(){
+  const fullName = document.getElementById('sellerFullName').value.trim();
+  const phone = document.getElementById('sellerPhone').value.trim();
+  const idNumber = document.getElementById('sellerIdNumber').value.trim();
+  const department = document.getElementById('sellerDepartment').value;
+
+  if(!fullName || !phone || !idNumber || !department){ alert('Please fill all fields'); return; }
+
+  // Proceed to step 3
+  showSellerStep(3);
+}
+
+function backToStep2(){
+  showSellerStep(2);
+}
+
+function completeSellerSignup(){
+  const displayName = document.getElementById('sellerDisplayName').value.trim();
+  const bio = document.getElementById('sellerBio').value.trim();
+  const agreement = document.getElementById('sellerAgreement').checked;
+
+  if(!displayName){ alert('Please enter a display name'); return; }
+  if(!agreement){ alert('Please agree to the terms and conditions'); return; }
+
+  // Get selected categories
+  const categories = [];
+  document.querySelectorAll('#sellerSignupModal input[type="checkbox"]:checked').forEach(cb => {
+    if(cb.value && cb.value !== 'on') categories.push(cb.value);
+  });
+
+  // Create seller profile
+  const buyer = localStorage.getItem('buyer');
+  const users = JSON.parse(localStorage.getItem('users')||'[]');
+  const userIndex = users.findIndex(u=>u.email===buyer);
+  if(userIndex !== -1){
+    users[userIndex].isSeller = true;
+    users[userIndex].sellerDisplayName = displayName;
+    users[userIndex].sellerBio = bio;
+    users[userIndex].sellerCategories = categories;
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+
+  // Show success step
+  showSellerStep('success');
 }
 </script>
 </body>

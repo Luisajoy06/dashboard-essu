@@ -91,14 +91,19 @@ if (document.getElementById("buyerEmail")) {
 }
 
 // SAMPLE SELLER ITEMS (with category and seller)
-const products = [
-  { id: 1, name: "iPhone 13 Pro", price: 35000, img: "https://picsum.photos/300/200?1", category: 'Electronics', seller: 'Juan Dela Cruz', desc: 'Gently used, excellent condition' },
-  { id: 2, name: "Data Structures Book", price: 500, img: "https://picsum.photos/300/200?2", category: 'Books', seller: 'Maria Santos', desc: 'CS textbook, like new' },
-  { id: 3, name: "Study Desk", price: 2500, img: "https://picsum.photos/300/200?3", category: 'Furniture', seller: 'Pedro Garcia', desc: 'Wooden desk, perfect for dorm' },
-  { id: 4, name: "ESSU Hoodie", price: 450, img: "https://picsum.photos/300/200?4", category: 'Clothing', seller: 'Ana Reyes', desc: 'Official ESSU merch, size L' }
+let products = JSON.parse(localStorage.getItem('products')) || [
+  { id: 1, name: "iPhone 13 Pro", price: 35000, img: "https://picsum.photos/300/200?1", category: 'Electronics', seller: 'Juan Dela Cruz', desc: 'Gently used, excellent condition', condition: 'Used', views: 45, rating: 4.5 },
+  { id: 2, name: "Data Structures Book", price: 500, img: "https://picsum.photos/300/200?2", category: 'Books', seller: 'Maria Santos', desc: 'CS textbook, like new', condition: 'New', views: 32, rating: 4.8 },
+  { id: 3, name: "Study Desk", price: 2500, img: "https://picsum.photos/300/200?3", category: 'Furniture', seller: 'Pedro Garcia', desc: 'Wooden desk, perfect for dorm', condition: 'Used', views: 28, rating: 4.2 },
+  { id: 4, name: "ESSU Hoodie", price: 450, img: "https://picsum.photos/300/200?4", category: 'Clothing', seller: 'Ana Reyes', desc: 'Official ESSU merch, size L', condition: 'New', views: 67, rating: 4.9 },
+  { id: 5, name: "MacBook Pro 14\"", price: 85000, img: "https://picsum.photos/300/200?5", category: 'Electronics', seller: 'Carlos Mendoza', desc: 'Latest model, barely used', condition: 'Used', views: 89, rating: 4.7 },
+  { id: 6, name: "Calculus Textbook", price: 800, img: "https://picsum.photos/300/200?6", category: 'Books', seller: 'Elena Cruz', desc: 'Complete with solutions manual', condition: 'New', views: 23, rating: 4.6 },
+  { id: 7, name: "Gaming Chair", price: 4200, img: "https://picsum.photos/300/200?7", category: 'Furniture', seller: 'Miguel Santos', desc: 'Ergonomic design, excellent condition', condition: 'Used', views: 41, rating: 4.4 },
+  { id: 8, name: "ESSU Tumbler", price: 250, img: "https://picsum.photos/300/200?8", category: 'Other', seller: 'Sofia Reyes', desc: 'Keep drinks hot/cold', condition: 'New', views: 19, rating: 4.3 }
 ];
 
 let cart = loadCart();
+let wishlist = loadWishlist();
 
 const grid = document.getElementById("itemsGrid");
 function renderProducts(filterCategory){
@@ -106,9 +111,11 @@ function renderProducts(filterCategory){
   grid.innerHTML = '';
   const list = filterCategory && filterCategory !== 'All' ? products.filter(p=>p.category === filterCategory) : products;
   list.forEach(p=>{
+    const conditionClass = p.condition === 'New' ? 'condition-new' : 'condition-used';
     grid.innerHTML += `
       <div class="card">
         <span class="tag">${p.category}</span>
+        <span class="condition-badge ${conditionClass}">${p.condition}</span>
         <span class="heart">♡</span>
         <img src="${p.img||'https://via.placeholder.com/300x220?text=No+Image'}" alt="" onerror="this.src='https://via.placeholder.com/300x220?text=No+Image'">
         <h3>${p.name}</h3>
@@ -197,6 +204,40 @@ function loadCart(){
   return raw ? normalizeCart(JSON.parse(raw)) : [];
 }
 
+/* Wishlist persistence */
+function saveWishlist(){
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+}
+function loadWishlist(){
+  const raw = localStorage.getItem('wishlist');
+  return raw ? JSON.parse(raw) : [];
+}
+
+function toggleWishlist(id) {
+  const item = products.find(p => p.id === id);
+  const existingIndex = wishlist.findIndex(w => w.id === id);
+  if (existingIndex > -1) {
+    wishlist.splice(existingIndex, 1);
+    showToast(`${item.name} removed from wishlist`);
+  } else {
+    wishlist.push({ id: item.id, name: item.name, price: item.price, img: item.img });
+    showToast(`${item.name} added to wishlist`);
+  }
+  saveWishlist();
+  updateWishlistUI();
+}
+
+function updateWishlistUI() {
+  document.querySelectorAll('.heart').forEach((heart, index) => {
+    const card = heart.closest('.card');
+    const img = card.querySelector('img');
+    const productId = parseInt(img.src.split('/').pop().split('?')[1] || '1'); // Extract ID from image URL
+    const isInWishlist = wishlist.some(w => w.id === productId);
+    heart.textContent = isInWishlist ? '♥' : '♡';
+    heart.style.color = isInWishlist ? 'red' : '#333';
+  });
+}
+
 /* Checkout modal flow (modal-based stepper) */
 function openCheckoutModal(showAddressToo){
   const buyer = currentBuyer();
@@ -253,8 +294,12 @@ function toAddressStep(){
 }
 
 function toReviewStep(){
+  const name = document.getElementById('addressName').value.trim();
+  const phone = document.getElementById('addressPhone').value.trim();
   const addr = document.getElementById('addressInput').value.trim();
-  if(!addr){ alert('Enter delivery address'); return; }
+  if(!name){ alert('Please enter your full name'); return; }
+  if(!phone){ alert('Please enter your phone number'); return; }
+  if(!addr){ alert('Please enter your delivery address'); return; }
   populateCheckoutSummary();
   document.getElementById('step-address').classList.add('hidden');
   document.getElementById('step-review').classList.remove('hidden');
@@ -264,8 +309,10 @@ function confirmOrderFromModal(){
   const buyer = currentBuyer();
   if(!buyer){ alert('Please log in to place orders'); return; }
   const sel = document.querySelector('input[name="pmethod"]:checked');
+  const name = document.getElementById('addressName').value.trim();
+  const phone = document.getElementById('addressPhone').value.trim();
   const addr = document.getElementById('addressInput').value.trim();
-  if(!sel || !addr){ alert('Missing payment or address'); return; }
+  if(!sel || !name || !phone || !addr){ alert('Missing payment or address information'); return; }
 
   const order = {
     id: 'ORD-' + Date.now(),
@@ -273,8 +320,13 @@ function confirmOrderFromModal(){
     items: cart.slice(),
     total: cart.reduce((s,i)=>s + i.price * i.qty,0),
     payment: sel.value,
+    recipientName: name,
+    recipientPhone: phone,
     address: addr,
-    createdAt: new Date().toISOString()
+    status: 'Processing',
+    trackingNumber: 'TRK-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+    createdAt: new Date().toISOString(),
+    estimatedDelivery: new Date(Date.now() + 3*24*60*60*1000).toISOString() // 3 days from now
   };
   const raw = localStorage.getItem('orders');
   const orders = raw ? JSON.parse(raw) : [];
@@ -357,8 +409,10 @@ function attachUIHandlers(){
   // hearts
   document.querySelectorAll('.heart').forEach(heart => {
     heart.onclick = () => {
-      heart.textContent = heart.textContent === '♡' ? '♥' : '♡';
-      heart.style.color = heart.textContent === '♥' ? 'red' : '#333';
+      const card = heart.closest('.card');
+      const img = card.querySelector('img');
+      const productId = parseInt(img.src.split('/').pop().split('?')[1] || '1'); // Extract ID from image URL
+      toggleWishlist(productId);
     };
   });
 
@@ -416,3 +470,114 @@ function showToast(msg){
 
 // update cart badge on load
 updateCartBadge();
+
+// FILTER MODAL FUNCTIONS
+function openFilterModal(){
+  document.getElementById('filterModal').classList.add('open');
+  // Populate current filters if any
+  const currentFilters = getCurrentFilters();
+  document.getElementById('filterSearch').value = currentFilters.search || '';
+  document.getElementById('filterCategory').value = currentFilters.category || '';
+  document.getElementById('filterCondition').value = currentFilters.condition || '';
+  document.getElementById('minPrice').value = currentFilters.minPrice || '';
+  document.getElementById('maxPrice').value = currentFilters.maxPrice || '';
+}
+
+function closeFilterModal(){
+  document.getElementById('filterModal').classList.remove('open');
+}
+
+function applyFilters(){
+  const search = document.getElementById('filterSearch').value.trim().toLowerCase();
+  const category = document.getElementById('filterCategory').value;
+  const condition = document.getElementById('filterCondition').value;
+  const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+  const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+
+  // Store filters
+  const filters = { search, category, condition, minPrice, maxPrice };
+  localStorage.setItem('productFilters', JSON.stringify(filters));
+
+  // Apply filters and render
+  renderProductsWithFilters(filters);
+  closeFilterModal();
+  showToast('Filters applied!');
+}
+
+function clearFilters(){
+  document.getElementById('filterSearch').value = '';
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterCondition').value = '';
+  document.getElementById('minPrice').value = '';
+  document.getElementById('maxPrice').value = '';
+
+  localStorage.removeItem('productFilters');
+  renderProducts();
+  closeFilterModal();
+  showToast('Filters cleared!');
+}
+
+function getCurrentFilters(){
+  const stored = localStorage.getItem('productFilters');
+  return stored ? JSON.parse(stored) : {};
+}
+
+function renderProductsWithFilters(filters){
+  if(!grid) return;
+  grid.innerHTML = '';
+
+  let filteredProducts = products;
+
+  // Apply search filter
+  if(filters.search){
+    filteredProducts = filteredProducts.filter(p =>
+      p.name.toLowerCase().includes(filters.search) ||
+      (p.desc && p.desc.toLowerCase().includes(filters.search))
+    );
+  }
+
+  // Apply category filter
+  if(filters.category){
+    filteredProducts = filteredProducts.filter(p => p.category === filters.category);
+  }
+
+  // Apply price range filter
+  filteredProducts = filteredProducts.filter(p =>
+    p.price >= filters.minPrice && p.price <= filters.maxPrice
+  );
+
+  // Apply condition filter
+  if(filters.condition){
+    filteredProducts = filteredProducts.filter(p => p.condition === filters.condition);
+  }
+
+  // Render filtered products
+  if(filteredProducts.length === 0){
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#6b7280;font-size:16px">No products match your filters.</div>';
+  } else {
+    filteredProducts.forEach(p=>{
+      const conditionClass = p.condition === 'New' ? 'condition-new' : 'condition-used';
+      grid.innerHTML += `
+        <div class="card">
+          <span class="tag">${p.category}</span>
+          <span class="condition-badge ${conditionClass}">${p.condition}</span>
+          <span class="heart">♡</span>
+          <img src="${p.img||'https://via.placeholder.com/300x220?text=No+Image'}" alt="" onerror="this.src='https://via.placeholder.com/300x220?text=No+Image'">
+          <h3>${p.name}</h3>
+          <p>${p.desc || ''}</p>
+          <h4>₱${p.price}</h4>
+          <span class="seller">📍 ${p.seller}</span>
+          <div style="margin-top:10px"><button onclick="addToCart(${p.id})">Add to Cart</button></div>
+        </div>`;
+    });
+  }
+
+  attachUIHandlers();
+  updateWishlistUI();
+}
+
+// On page load, apply any stored filters
+const initialFilters = getCurrentFilters();
+if(Object.keys(initialFilters).length > 0){
+  renderProductsWithFilters(initialFilters);
+}
